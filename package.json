@@ -10,9 +10,11 @@
         "postinstall": "nuxt prepare"
     },
     "devDependencies": {
+        "@element-plus/nuxt": "^1.0.6",
         "@nuxt/devtools": "latest",
         "nuxt": "^3.7.3",
-        "prisma": "^5.3.1"
+        "prisma": "^5.3.1",
+        "sass": "^1.68.0"
     },
     "dependencies": {
         "@nuxtjs/supabase": "^1.1.0",
