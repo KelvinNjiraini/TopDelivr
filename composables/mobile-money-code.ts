@@ -15,5 +15,5 @@ export const useMobileMoneyCode = async () => {
         });
     }
 
-    return unref(data);
+    return data.value;
 };

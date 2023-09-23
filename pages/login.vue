@@ -144,7 +144,14 @@ const login = async () => {
             console.log(error);
             throw error;
         }
-        userStore.setUserData(data);
+        const userData = {
+            id: data.user.id,
+            name: data.user.user_metadata.name,
+            role: data.user.user_metadata.role,
+            phone: data.user.user_metadata.phone,
+        };
+
+        userStore.setUserData(userData);
     } catch (error: any) {
         console.log(error);
         errorNotification(error.message);
@@ -153,16 +160,16 @@ const login = async () => {
     }
 };
 
-// watchEffect(async () => {
-//     if (user.value) {
-//         if (query && query.redirectTo) {
-//             return await navigateTo(query.redirectTo as string, {
-//                 replace: true,
-//             });
-//         }
-//         return await navigateTo('/primary/dashboard');
-//     }
-// });
+watchEffect(async () => {
+    if (user.value && user.value.user_metadata.role === "affiliate") {
+        if (query && query.redirectTo) {
+            return await navigateTo(query.redirectTo as string, {
+                replace: true,
+            });
+        }
+        return await navigateTo("/app");
+    }
+});
 
 // onMounted(() => {
 //     console.log(user.value);

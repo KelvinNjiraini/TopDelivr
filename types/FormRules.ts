@@ -1,6 +1,6 @@
 export interface RegisterRule {
     name: string;
-    // levelOfEducation: string;
+    phone_number: string;
     email: string;
     password: string;
 }

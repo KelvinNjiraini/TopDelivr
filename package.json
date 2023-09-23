@@ -1,7 +1,6 @@
 {
     "name": "nuxt-app",
     "private": true,
-    "type": "module",
     "scripts": {
         "build": "nuxt build",
         "dev": "nuxt dev",
@@ -9,12 +8,18 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare"
     },
+    "prisma": {
+        "seed": "ts-node prisma/seed.ts"
+    },
     "devDependencies": {
         "@element-plus/nuxt": "^1.0.6",
         "@nuxt/devtools": "latest",
+        "@types/node": "^20.6.3",
         "nuxt": "^3.7.3",
         "prisma": "^5.3.1",
-        "sass": "^1.68.0"
+        "sass": "^1.68.0",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.2.2"
     },
     "dependencies": {
         "@nuxtjs/supabase": "^1.1.0",

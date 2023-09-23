@@ -3,7 +3,9 @@
 </template>
 
 <script setup>
-//
+definePageMeta({
+    layout: "affiliate",
+});
 </script>
 
 <style lang="scss" scoped>

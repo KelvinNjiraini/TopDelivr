@@ -6,6 +6,10 @@
 import { useRoute } from "nuxt/app";
 
 const { productId } = useRoute().params;
+definePageMeta({
+    layout: "affiliate",
+    middleware: "auth",
+});
 </script>
 
 <style lang="scss" scoped>

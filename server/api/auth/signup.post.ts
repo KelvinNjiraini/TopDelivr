@@ -1,7 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/server/db/client";
 export default defineEventHandler(async (event) => {
     // sign up and register code
     const body = await readBody(event);
@@ -25,6 +23,9 @@ export default defineEventHandler(async (event) => {
                     statusMessage: "User already exists",
                 });
             }
+            throw createError({
+                ...error,
+            });
         }
     }
 });

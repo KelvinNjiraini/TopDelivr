@@ -43,6 +43,18 @@
                         />
                     </el-form-item>
 
+                    <el-form-item label="Phone Number" prop="phone_number">
+                        <!-- <label for="password" class="text-base">Password</label> -->
+                        <el-input
+                            type="tel"
+                            name="phone_number"
+                            id="phone_number"
+                            placeholder="Enter your phone number"
+                            v-model="initialState.phone_number"
+                            size="large"
+                        />
+                    </el-form-item>
+
                     <el-form-item label="Password" prop="password">
                         <!-- <label for="password" class="text-base">Password</label> -->
                         <el-input
@@ -78,10 +90,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, watchEffect } from "vue";
 import { FormRules, FormInstance, ElNotification } from "element-plus";
 import { RegisterRule } from "@/types/FormRules";
 import { useUserStore } from "@/stores/userStore";
+import { Roles } from "~/types/Roles";
+import { rules } from "~/utils/constants";
+import { useAffiliateRegister } from "~/composables/affiliateRegister.ts";
 
 const userStore = useUserStore();
 const { query } = useRoute();
@@ -93,40 +108,12 @@ const initialState = reactive<RegisterRule>({
     email: "",
     password: "",
     name: "",
+    phone_number: "",
 });
 const isLoading = ref(false);
 const err = ref<string | null>(null);
 
 const ruleFormRef = ref<FormInstance>();
-const rules = reactive<FormRules<RegisterRule>>({
-    name: [
-        {
-            required: true,
-            message: "First name field is required",
-            trigger: "change",
-        },
-    ],
-    email: [
-        { required: true, message: "Email field is required", trigger: "blur" },
-        {
-            type: "email",
-            message: "Email format is not correct",
-            trigger: "blur",
-        },
-    ],
-    password: [
-        {
-            required: true,
-            message: "Password field is required",
-            trigger: "change",
-        },
-        {
-            min: 6,
-            message: "Password length has to be more than 6 characters",
-            trigger: "change",
-        },
-    ],
-});
 
 function errorNotification(message: string | null) {
     ElNotification({
@@ -152,25 +139,53 @@ const signup = async () => {
 
     isLoading.value = true;
     try {
-        const { data: authResponse, error } = await client.auth.signUp({
-            email: initialState.email,
-            password: initialState.password,
-            options: {
-                data: {
-                    name: initialState.name,
-                    role: "admin",
-                },
-            },
-        });
-        if (error) {
-            console.log("Supabase auth", authResponse);
-            throw error;
-        }
-        userStore.setUserData(data);
-    } catch (err: any) {
+        const userData = await sbRegister();
+        const data = await useAffiliateRegister(userData, initialState);
+        console.log(data);
+    } catch (err) {
         errorNotification(err.message || "Something went wrong");
     } finally {
         isLoading.value = false;
     }
 };
+
+async function sbRegister() {
+    const { data: authResponse, error } = await client.auth.signUp({
+        email: initialState.email,
+        password: initialState.password,
+
+        options: {
+            data: {
+                name: initialState.name,
+                role: "affiliate",
+                phone: initialState.phone_number,
+            },
+        },
+    });
+    if (error) {
+        console.log("Supabase auth", authResponse);
+        throw error;
+    }
+    // if (authResponse && authResponse.user) {
+    const userData = {
+        id: authResponse.user.id,
+        name: initialState.name,
+        role: authResponse.user.user_metadata.role,
+        phone: initialState.phone_number,
+    };
+
+    return userData;
+    // }
+}
+
+watchEffect(async () => {
+    if (user.value && user.value.user_metadata.role === "affiliate") {
+        if (query && query.redirectTo) {
+            return await navigateTo(query.redirectTo as string, {
+                replace: true,
+            });
+        }
+        return await navigateTo("/app");
+    }
+});
 </script>
