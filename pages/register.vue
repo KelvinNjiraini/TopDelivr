@@ -90,25 +90,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watchEffect } from "vue";
+import { ref, reactive, watchEffect, onMounted } from "vue";
 import { FormRules, FormInstance, ElNotification } from "element-plus";
 import { RegisterRule } from "@/types/FormRules";
 import { useUserStore } from "@/stores/userStore";
-import { Roles } from "~/types/Roles";
 import { rules } from "~/utils/constants";
-import { useAffiliateRegister } from "~/composables/affiliateRegister.ts";
+import { useAffiliateRegister } from "~/composables/affiliateRegister";
+import { useRegisterToChimoney } from "~/composables/registerToChimoney";
+
+const config = useRuntimeConfig();
 
 const userStore = useUserStore();
 const { query } = useRoute();
+const user = useSupabaseUser();
 
 const client = useSupabaseClient();
-const user = useSupabaseUser();
 
 const initialState = reactive<RegisterRule>({
     email: "",
     password: "",
     name: "",
     phone_number: "",
+    role: "affiliate",
 });
 const isLoading = ref(false);
 const err = ref<string | null>(null);
@@ -139,11 +142,40 @@ const signup = async () => {
 
     isLoading.value = true;
     try {
-        const userData = await sbRegister();
-        const data = await useAffiliateRegister(userData, initialState);
-        console.log(data);
-    } catch (err) {
+        const chimoney_data = {
+            name: initialState.name,
+            email: initialState.email,
+        };
+        const subAccount = await useRegisterToChimoney(chimoney_data);
+        // console.log("SubAccount", subAccount);
+        const { user } = await sbRegister();
+        // register to chimoney
+
+        const data = await useAffiliateRegister(
+            {
+                id: user?.id,
+                name: initialState.name,
+                role: initialState.role,
+                subUserId: subAccount.data.id,
+            },
+            initialState
+        );
+        if (data && data.value) {
+            const finalObj = {
+                id: data.value.data.id,
+                name: data.value.data.name,
+                role: initialState.role,
+                phone: initialState.phone_number,
+                email: initialState.email,
+                // subUserId: subAccount.data.id,
+            };
+            userStore.setUserData(finalObj);
+            userStore.setSubUserId(subAccount.data.id);
+            console.log(data);
+        }
+    } catch (err: any) {
         errorNotification(err.message || "Something went wrong");
+        console.log(err);
     } finally {
         isLoading.value = false;
     }
@@ -157,7 +189,7 @@ async function sbRegister() {
         options: {
             data: {
                 name: initialState.name,
-                role: "affiliate",
+                role: initialState.role,
                 phone: initialState.phone_number,
             },
         },
@@ -167,15 +199,16 @@ async function sbRegister() {
         throw error;
     }
     // if (authResponse && authResponse.user) {
-    const userData = {
-        id: authResponse.user.id,
-        name: initialState.name,
-        role: authResponse.user.user_metadata.role,
-        phone: initialState.phone_number,
-    };
+    //     const userData = {
+    //         id: authResponse.user.id,
+    //         name: initialState.name,
+    //         role: authResponse.user.user_metadata.role,
+    //         phone: initialState.phone_number,
+    //     };
 
-    return userData;
+    //     return userData;
     // }
+    return authResponse;
 }
 
 watchEffect(async () => {

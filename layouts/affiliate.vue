@@ -13,11 +13,11 @@
                             >My Transactions</NuxtLink
                         >
                     </li>
-                    <li>
+                    <!-- <li>
                         <NuxtLink to="/app/profile/products" class="btn"
                             >My Products</NuxtLink
                         >
-                    </li>
+                    </li> -->
                     <li>
                         <button
                             class="outline-none bg-red-600 text-white hover:bg-red-400 px-4 py-1 rounded-lg"

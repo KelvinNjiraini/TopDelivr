@@ -1,36 +1,35 @@
 import { defineStore } from "pinia";
-// import { Roles } from "~/types/Roles";
+import { InitialState } from "~/types/InitialState";
 
-interface InitialState {
-    id: string;
-    phone: string;
-    role: string;
-    name: string;
-}
-
-const initialState: InitialState = {
+const placeholderState: InitialState = {
     id: "",
     phone: "",
     role: "affiliate",
-    name: "Test user",
+    email: "",
+    name: "",
 };
+
+interface FinalState {
+    userData: InitialState;
+    subUserId: string | null;
+}
 
 export const useUserStore = defineStore("user", {
     // state
-    state: () => ({
-        userData: initialState,
-        subAccount: "",
+    state: (): FinalState => ({
+        userData: placeholderState,
+        subUserId: null,
     }),
     actions: {
         logout() {
-            this.userData = initialState;
-            this.subAccount = "";
+            this.userData = placeholderState;
+            this.subUserId = null;
         },
         setUserData(payload: InitialState) {
             this.userData = payload;
         },
-        setSubAccount(payload: string) {
-            this.subAccount = payload;
+        setSubUserId(payload: string | null) {
+            this.subUserId = payload;
         },
     },
     persist: true,

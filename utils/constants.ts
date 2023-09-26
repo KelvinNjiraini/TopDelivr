@@ -2,6 +2,8 @@ import { FormRules } from "element-plus";
 import { RegisterRule } from "~/types/FormRules";
 
 export const chimoney_api_url = "https://api-v2-sandbox.chimoney.io/v0.2/";
+
+
 export const rules = reactive<FormRules<RegisterRule>>({
     name: [
         {

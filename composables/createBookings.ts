@@ -21,7 +21,7 @@ export const useCreateBookings = async (products: Product[]) => {
         },
         method: "POST",
         body: {
-            productsArr: productsToBook,
+            affiliateObj: productsToBook,
         },
     });
     if (error.value) {

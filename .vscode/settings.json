@@ -1,5 +1,5 @@
 {
-    "vue.codeActions.enabled": false,
+    "vue.codeActions.enabled": true,
     "[prisma]": {
         "editor.defaultFormatter": "Prisma.prisma"
     },

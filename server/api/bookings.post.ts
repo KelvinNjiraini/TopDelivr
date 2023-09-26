@@ -4,16 +4,12 @@ import { prisma } from "@/server/db/client";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
-    const { productsArr } = body;
-    // const user = await serverSupabaseUser(event);
-
-    // if (!user) {
-    //     throw createError({ status: 401, message: "You are not logged in" });
-    // }
+    const { affiliateObj } = body;
+    console.log(affiliateObj);
 
     try {
         const bookings = await prisma.productBooking.createMany({
-            data: [...productsArr],
+            data: affiliateObj,
         });
         return { message: "Success", data: bookings };
     } catch (e) {

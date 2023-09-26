@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-    layout: "affiliate",
+    layout: "user",
     middleware: "auth",
 });
 </script>
