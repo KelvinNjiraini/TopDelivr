@@ -15,8 +15,9 @@ export const useRegisterToChimoney = async function (userData: SubAccount) {
                 email: userData.email,
             }),
         });
+
         return res as RegisterReturnType;
-    } catch (err) {
+    } catch (err: any) {
         throw err;
     }
 };
