@@ -9,33 +9,35 @@ const placeholderState: InitialState = {
     name: "",
 };
 
-interface FinalState {
-    userData: InitialState;
-    subUserId: string | null;
-}
-
-export const useUserStore = defineStore("user", {
+export const useUserStore = defineStore("user", () => {
     // state
-    state: (): FinalState => ({
-        userData: placeholderState,
-        subUserId: null,
-    }),
-    actions: {
-        logout() {
-            this.userData = placeholderState;
-            this.subUserId = null;
-        },
-        setUserData(payload: InitialState) {
-            this.userData = payload;
-        },
-        setSubUserId(payload: string | null) {
-            this.subUserId = payload;
-        },
-    },
-    getters: {
-        getUserId(): any {
-            return this.userData.id;
-        },
-    },
-    persist: true,
+
+    const userData = ref<InitialState>(placeholderState);
+    const subUserId = ref<string | null>(null);
+    // getters
+
+    const getUserId = computed<string>(() => {
+        return userData.value.id;
+    });
+
+    // actions
+    function logout(): void {
+        userData.value = placeholderState;
+        subUserId.value = null;
+    }
+    function setUserData(payload: InitialState) {
+        userData.value = payload;
+    }
+    function setSubUserId(payload: string | null) {
+        subUserId.value = payload;
+    }
+
+    return {
+        userData,
+        subUserId,
+        getUserId,
+        logout,
+        setSubUserId,
+        setUserData,
+    };
 });

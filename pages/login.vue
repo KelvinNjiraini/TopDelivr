@@ -72,8 +72,12 @@ import { ref, onMounted } from "vue";
 import { FormRules, FormInstance, ElNotification } from "element-plus";
 import { LoginRule } from "@/types/FormRules";
 import { useUserStore } from "@/stores/userStore";
+import { InitialState } from "@/types/InitialState";
+import { storeToRefs } from "pinia";
+import { useFetchAffiliate } from "~/composables/fetchAffiliate";
 
 const userStore = useUserStore();
+const { userData } = storeToRefs(userStore);
 
 const { query } = useRoute();
 
@@ -139,19 +143,25 @@ const login = async () => {
             password: initialState.password,
         });
 
-        console.log(data);
+        // console.log(data);
         if (error) {
             console.log(error);
             throw error;
         }
-        const userData = {
+        const currentAffiliate = await useFetchAffiliate(`${data.user.id}`);
+        const userData: InitialState = {
             id: data.user.id,
             name: data.user.user_metadata.name,
             role: data.user.user_metadata.role,
             phone: data.user.user_metadata.phone,
+            email: initialState.email,
         };
 
+        if (currentAffiliate && currentAffiliate.data) {
+            userStore.setSubUserId(currentAffiliate?.data?.subUserId);
+        }
         userStore.setUserData(userData);
+        return data.user;
     } catch (error: any) {
         console.log(error);
         errorNotification(error.message);
@@ -161,7 +171,11 @@ const login = async () => {
 };
 
 watchEffect(async () => {
-    if (user.value && user.value.user_metadata.role === "affiliate") {
+    if (
+        user.value &&
+        user.value.user_metadata.role === "affiliate" &&
+        userData.value.id !== ""
+    ) {
         if (query && query.redirectTo) {
             return await navigateTo(query.redirectTo as string, {
                 replace: true,
