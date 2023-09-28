@@ -10,6 +10,7 @@ export const useAffiliateRegister = async function (
             id: userData.id,
             name: userData.name,
             email: initialState.email,
+            subUserId: userData.subUserId,
         },
     });
 

@@ -48,8 +48,10 @@ model ProductBooking {
 }
 
 model Ticket {
-  id          String    @id @default(uuid()) @db.Uuid
-  hours       Int
-  affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
-  affiliateId String    @db.Uuid
+  id    String @id @default(uuid()) @db.Uuid
+  hours Int
+
+  status      String
+  Affiliate   Affiliate? @relation(fields: [affiliateId], references: [id])
+  affiliateId String?    @db.Uuid
 }

@@ -32,5 +32,10 @@ export const useUserStore = defineStore("user", {
             this.subUserId = payload;
         },
     },
+    getters: {
+        getUserId(): any {
+            return this.userData.id;
+        },
+    },
     persist: true,
 });

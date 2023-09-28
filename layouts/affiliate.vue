@@ -8,11 +8,11 @@
                 <ul class="flex gap-4">
                     <li><NuxtLink to="/app">Home</NuxtLink></li>
                     <li><NuxtLink to="/app/profile">My Profile</NuxtLink></li>
-                    <li>
+                    <!-- <li>
                         <NuxtLink to="/app/profile/transactions" class="btn"
                             >My Transactions</NuxtLink
                         >
-                    </li>
+                    </li> -->
                     <!-- <li>
                         <NuxtLink to="/app/profile/products" class="btn"
                             >My Products</NuxtLink
@@ -21,7 +21,7 @@
                     <li>
                         <button
                             class="outline-none bg-red-600 text-white hover:bg-red-400 px-4 py-1 rounded-lg"
-                            @click="logout"
+                            @click.prevent="logout"
                         >
                             Logout
                         </button>
