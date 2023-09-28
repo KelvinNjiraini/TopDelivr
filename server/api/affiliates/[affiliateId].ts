@@ -4,7 +4,7 @@ import { prisma } from "@/server/db/client";
 export default defineEventHandler(async (event) => {
     const id = event.context.params?.affiliateId;
     try {
-        const user = await prisma.affiliate.findFirst({
+        const user = await prisma.affiliate.findFirstOrThrow({
             where: {
                 id,
             },

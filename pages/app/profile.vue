@@ -76,6 +76,7 @@
 import { onMounted, ref } from "vue";
 import { useGetSubAccountDetails } from "~/composables/getSubAccountDetails";
 import { SubAccountDetailsResponse } from "~/types/SubAccountDetailsResponse";
+import { useFetchAffiliate } from "~/composables/fetchAffiliate";
 
 const isLoading = ref(false);
 const subAccount = ref<SubAccountDetailsResponse | null>(null);
@@ -84,21 +85,7 @@ const user = useSupabaseUser();
 
 async function fetchAffiliate() {
     if (user.value) {
-        isLoading.value = true;
-        try {
-            const { data, error } = await useFetch(
-                `/api/affiliates/${user.value.id}`,
-                {
-                    method: "get",
-                }
-            );
-            if (error.value) {
-                throw error.value;
-            }
-            return data.value;
-        } catch (error: any) {
-            throw error;
-        }
+        return await useFetchAffiliate(user.value.id);
     }
 }
 
