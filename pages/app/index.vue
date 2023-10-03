@@ -42,6 +42,7 @@
                             <el-button
                                 class="bg-green-700 text-white hover:bg-green-500 px-5 py-2 rounded-lg ml-3"
                                 type="primary"
+                                :loading="isCreateTicketLoading"
                                 @click="handleCreateTicket"
                             >
                                 Confirm
@@ -78,12 +79,15 @@ import { useUserStore } from "~/stores/userStore";
 import { storeToRefs } from "pinia";
 
 const userStore = useUserStore();
+const sbUser = useSupabaseUser();
 const { getUserId, subUserId, userData } = storeToRefs(userStore);
 const isLoading = ref(false);
+const isCreateTicketLoading = ref(false);
 const tableData = ref<Ticket[]>([]);
 const dialogVisible = ref(false);
 const hours = ref(1);
 // const selectedRows = ref<Ticket[]>([]);
+await initializeData();
 
 async function initializeData() {
     isLoading.value = true;
@@ -95,26 +99,28 @@ async function initializeData() {
     isLoading.value = false;
 }
 
-function handleCreateTicket() {
-    isLoading.value = true;
+async function handleCreateTicket() {
+    isCreateTicketLoading.value = true;
 
     try {
-        const { data, error } = useFetch(`/api/tickets/create-ticket`, {
+        const { data, error } = await useFetch(`/api/tickets/create-ticket`, {
             method: "post",
             body: {
                 hours: hours.value,
+                affiliateId: getUserId.value,
+                subUserId: subUserId.value,
             },
         });
         if (error.value) {
             throw error.value;
         }
-
+        await initializeData();
         return data.value;
     } catch (err: any) {
         console.log(err);
         errorNotification(err.message || "Error in creating ticket");
     } finally {
-        isLoading.value = false;
+        isCreateTicketLoading.value = false;
         dialogVisible.value = false;
     }
 }
@@ -135,16 +141,6 @@ function handleCreateTicket() {
 //     }
 //     isLoading.value = false;
 // }
-
-function trialOne() {
-    const userStore = useUserStore();
-    console.log("Trial one", userStore.userData.id);
-}
-function trialTwo() {
-    const userStore = useUserStore();
-    console.log("Trial two", userStore.getUserId);
-}
-
 function errorNotification(message: string | null) {
     ElNotification({
         title: "Error",
@@ -152,6 +148,14 @@ function errorNotification(message: string | null) {
         type: "error",
     });
 }
+
+watchEffect(async () => {
+    if (!sbUser.value) {
+        return await navigateTo("/login", {
+            replace: true,
+        });
+    }
+});
 
 onMounted(async () => {
     await initializeData();

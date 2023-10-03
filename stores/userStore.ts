@@ -9,35 +9,41 @@ const placeholderState: InitialState = {
     name: "",
 };
 
-export const useUserStore = defineStore("user", () => {
-    // state
+export const useUserStore = defineStore(
+    "user",
+    () => {
+        // state
 
-    const userData = ref<InitialState>(placeholderState);
-    const subUserId = ref<string | null>(null);
-    // getters
+        const userData = ref<InitialState>(placeholderState);
+        const subUserId = ref<string | null>(null);
+        // getters
 
-    const getUserId = computed<string>(() => {
-        return userData.value.id;
-    });
+        const getUserId = computed<string | null>(() => {
+            return userData.value.id || null;
+        });
 
-    // actions
-    function logout(): void {
-        userData.value = placeholderState;
-        subUserId.value = null;
+        // actions
+        function logout(): void {
+            userData.value = placeholderState;
+            subUserId.value = null;
+        }
+        function setUserData(payload: InitialState) {
+            userData.value = payload;
+        }
+        function setSubUserId(payload: string | null) {
+            subUserId.value = payload;
+        }
+
+        return {
+            userData,
+            subUserId,
+            getUserId,
+            logout,
+            setSubUserId,
+            setUserData,
+        };
+    },
+    {
+        persist: true,
     }
-    function setUserData(payload: InitialState) {
-        userData.value = payload;
-    }
-    function setSubUserId(payload: string | null) {
-        subUserId.value = payload;
-    }
-
-    return {
-        userData,
-        subUserId,
-        getUserId,
-        logout,
-        setSubUserId,
-        setUserData,
-    };
-});
+);

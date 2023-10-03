@@ -149,7 +149,7 @@ const login = async () => {
             throw error;
         }
         const currentAffiliate = await useFetchAffiliate(`${data.user.id}`);
-        const userData: InitialState = {
+        const userInfo: InitialState = {
             id: data.user.id,
             name: data.user.user_metadata.name,
             role: data.user.user_metadata.role,
@@ -160,7 +160,7 @@ const login = async () => {
         if (currentAffiliate && currentAffiliate.data) {
             userStore.setSubUserId(currentAffiliate?.data?.subUserId);
         }
-        userStore.setUserData(userData);
+        userStore.setUserData(userInfo);
         return data.user;
     } catch (error: any) {
         console.log(error);
@@ -171,17 +171,20 @@ const login = async () => {
 };
 
 watchEffect(async () => {
-    if (
-        user.value &&
-        user.value.user_metadata.role === "affiliate" &&
-        userData.value.id !== ""
-    ) {
+    if (user.value && user.value.user_metadata.role === "affiliate") {
         if (query && query.redirectTo) {
             return await navigateTo(query.redirectTo as string, {
                 replace: true,
             });
         }
         return await navigateTo("/app");
+    } else if (user.value && user.value.user_metadata.role === "admin") {
+        if (query && query.redirectTo) {
+            return await navigateTo(query.redirectTo as string, {
+                replace: true,
+            });
+        }
+        return await navigateTo("/admin");
     }
 });
 

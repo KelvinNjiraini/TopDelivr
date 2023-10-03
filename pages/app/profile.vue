@@ -108,6 +108,14 @@ async function fetchSubUserAccount() {
     }
 }
 
+watchEffect(async () => {
+    if (!user.value) {
+        return await navigateTo("/login", {
+            replace: true,
+        });
+    }
+});
+
 definePageMeta({
     layout: "affiliate",
     middleware: "auth",

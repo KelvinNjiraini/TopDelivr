@@ -37,6 +37,13 @@ watchEffect(async () => {
             });
         }
         return await navigateTo("/app");
+    } else if (user.value && user.value.user_metadata.role === "admin") {
+        if (query && query.redirectTo) {
+            return await navigateTo(query.redirectTo as string, {
+                replace: true,
+            });
+        }
+        return await navigateTo("/admin");
     }
 });
 </script>

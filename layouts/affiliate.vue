@@ -37,12 +37,15 @@
 
 <script setup lang="ts">
 import { ElNotification } from "element-plus";
+import { useUserStore } from "~/stores/userStore";
 const client = useSupabaseClient();
+const userStore = useUserStore();
 async function logout() {
     const { error } = await client.auth.signOut();
     if (error) {
         errorNotification(error.message || "Something went wrong");
     }
+    userStore.logout();
 }
 
 function errorNotification(message: string | null) {

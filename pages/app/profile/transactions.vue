@@ -3,6 +3,15 @@
 </template>
 
 <script setup lang="ts">
+const user = useSupabaseUser();
+
+watchEffect(async () => {
+    if (!user.value) {
+        return await navigateTo("/login", {
+            replace: true,
+        });
+    }
+});
 definePageMeta({
     layout: "affiliate",
     middleware: "auth",

@@ -1,16 +1,18 @@
 import { Product } from "@prisma/client";
+import { storeToRefs } from "pinia";
 import { useUserStore } from "~/stores/userStore";
 
 // const user = useSupabaseUser();
 export const useCreateBookings = async (products: Product[]) => {
     const userStore = useUserStore();
-    if (userStore.userData.id === "") {
+    const { getUserId } = storeToRefs(userStore);
+    if (getUserId.value === "") {
         throw createError({
             statusCode: 401,
             message: "Please login to access this service.",
         });
     }
-    const affiliateId = userStore.userData.id;
+    const affiliateId = getUserId.value;
     const productsToBook = products.map((el) => {
         return { productId: el.id, affiliateId: affiliateId };
     });
