@@ -8,8 +8,8 @@
                 <div class="flex flex-col">
                     <h2 class="text-2xl mb-3">All Tickets</h2>
                     <span class="text-base text-slate-500"
-                        >Payout <strong>5 chimoney</strong> for each hour of
-                        work</span
+                        >Payout <strong>{{ chiRate }} chimoney</strong> for each
+                        hour of work</span
                     >
                 </div>
 
@@ -103,7 +103,7 @@ const isLoading = ref(false);
 const isPendingTicketLoading = ref(false);
 const tableData = ref<Ticket[]>([]);
 const dialogVisible = ref(false);
-const chiRate = 50; //amount payable in chimoney
+const chiRate = 5; //amount payable in chimoney
 // const selectedRows = ref<Ticket[]>([]);
 await initializeData();
 
