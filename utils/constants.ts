@@ -3,7 +3,6 @@ import { RegisterRule } from "~/types/FormRules";
 
 export const chimoney_api_url = "https://api-v2-sandbox.chimoney.io/v0.2/";
 
-
 export const rules = reactive<FormRules<RegisterRule>>({
     name: [
         {
@@ -29,6 +28,13 @@ export const rules = reactive<FormRules<RegisterRule>>({
         {
             min: 6,
             message: "Password length has to be more than 6 characters",
+            trigger: "change",
+        },
+    ],
+    role: [
+        {
+            required: true,
+            message: "Role field is required",
             trigger: "change",
         },
     ],

@@ -1,19 +1,28 @@
 <template>
     <div
-        class="flex items-center justify-center min-h-vh"
-        v-loading="isLoading"
+        class="flex items-center justify-center min-h-vh w-full"
+        v-loading.fullscreen.lock="isLoading"
     >
         <div class="">
             <div class="flex justify-between w-full mb-5">
-                <h2 class="text-2xl">All Products</h2>
+                <div class="flex flex-col">
+                    <h2 class="text-2xl mb-3">All Tickets</h2>
+                    <span class="text-base text-slate-500"
+                        >Payout <strong>5 chimoney</strong> for each hour of
+                        work</span
+                    >
+                </div>
 
-                <button
-                    class="outline-none bg-purple-800 text-white hover:bg-purple-500 px-5 py-2 rounded-lg"
-                    @click="dialogVisible = true"
-                >
-                    Make collective payment
-                </button>
+                <div>
+                    <button
+                        class="outline-none bg-purple-800 text-white hover:bg-purple-500 px-5 py-2 rounded-lg"
+                        @click="dialogVisible = true"
+                    >
+                        Make collective payment
+                    </button>
+                </div>
             </div>
+
             <client-only>
                 <el-dialog
                     v-model="dialogVisible"
@@ -36,7 +45,7 @@
                             <el-button
                                 class="bg-green-700 text-white hover:bg-green-500 px-5 py-2 rounded-lg ml-3"
                                 type="primary"
-                                :isLoading="isPendingTicketLoading"
+                                :loading="isPendingTicketLoading"
                                 @click="handlePendingTickets"
                             >
                                 Confirm
@@ -57,8 +66,21 @@
                 <el-table-column
                     prop="status"
                     label="Ticket status"
-                    width="300"
-                />
+                    width="200"
+                    style="text-align: center"
+                >
+                    <template #default="scope">
+                        <el-tag
+                            :type="
+                                scope.row.status === 'paid'
+                                    ? 'success'
+                                    : 'warning'
+                            "
+                        >
+                            {{ scope.row.status }}
+                        </el-tag>
+                    </template>
+                </el-table-column>
             </el-table>
         </div>
     </div>
@@ -66,7 +88,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { ElTable, ElButton, ElNotification, ElMessageBox } from "element-plus";
+import { ElTable, ElButton, ElNotification } from "element-plus";
 import { Product, Ticket } from "@prisma/client";
 import { useFetchAllTickets } from "~/composables/fetchAllTickets";
 import { useUserStore } from "~/stores/userStore";
@@ -81,8 +103,7 @@ const isLoading = ref(false);
 const isPendingTicketLoading = ref(false);
 const tableData = ref<Ticket[]>([]);
 const dialogVisible = ref(false);
-const hours = ref(1);
-const chiRate = 10; //amount payable in chimoney
+const chiRate = 50; //amount payable in chimoney
 // const selectedRows = ref<Ticket[]>([]);
 await initializeData();
 
@@ -122,15 +143,21 @@ async function handlePendingTickets() {
         // 4) update all the tickets above as paid
         if (ticketsToPay) {
             const updatedTickets = await useUpdateTickets(ticketsToPay);
-            console.log(updatedTickets);
+            return updatedTickets;
         }
     } catch (e: any) {
-        console.error(e);
+        if (e.status && e.status === 400) {
+            errorNotification(
+                "You do not have enough funds to complete this transaction"
+            );
+            return;
+        }
         errorNotification(
-            e.error || e.message || "Error completing the transaction"
+            "Error completing the transaction. Please try again later."
         );
     } finally {
         isPendingTicketLoading.value = false;
+        dialogVisible.value = false;
     }
 }
 
@@ -160,6 +187,13 @@ definePageMeta({
 });
 </script>
 
-<style lang="scss" scoped>
-/*  */
+<style scoped>
+.el-table {
+    /* background: red; */
+    @apply border;
+}
+
+:deep(.el-table__row) {
+    @apply text-center mb-3 border;
+}
 </style>

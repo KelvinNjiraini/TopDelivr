@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex justify-center items-center min-h-screen"
-        v-loading="isLoading"
+        v-loading.fullscreen.lock="isLoading"
     >
         <!-- start of card -->
         <div
@@ -55,6 +55,17 @@
                         />
                     </el-form-item>
 
+                    <el-form-item label="Register as" prop="role">
+                        <!-- <label for="password" class="text-base">Password</label> -->
+                        <el-select
+                            v-model="initialState.role"
+                            placeholder="Please select your role"
+                        >
+                            <el-option label="Affiliate" value="affiliate" />
+                            <el-option label="Admin" value="admin" />
+                        </el-select>
+                    </el-form-item>
+
                     <el-form-item label="Password" prop="password">
                         <!-- <label for="password" class="text-base">Password</label> -->
                         <el-input
@@ -91,8 +102,9 @@
 
 <script setup lang="ts">
 import { ref, reactive, watchEffect, onMounted } from "vue";
-import { FormRules, FormInstance, ElNotification } from "element-plus";
+import { FormInstance, ElNotification, ElMessage } from "element-plus";
 import { RegisterRule } from "@/types/FormRules";
+import { InitialState } from "@/types/InitialState";
 import { useUserStore } from "@/stores/userStore";
 import { rules } from "~/utils/constants";
 import { useAffiliateRegister } from "~/composables/affiliateRegister";
@@ -111,7 +123,7 @@ const initialState = reactive<RegisterRule>({
     password: "",
     name: "",
     phone_number: "",
-    role: "affiliate",
+    role: "",
 });
 const isLoading = ref(false);
 const err = ref<string | null>(null);
@@ -126,6 +138,13 @@ function errorNotification(message: string | null) {
     });
 }
 
+function registerSuccess() {
+    ElMessage({
+        message: "Registered successfully",
+        type: "success",
+    });
+}
+
 async function onSubmit(formEl: FormInstance | undefined) {
     if (!formEl) return;
     await formEl.validate((valid, fields) => {
@@ -133,7 +152,7 @@ async function onSubmit(formEl: FormInstance | undefined) {
             // signin function
             signup();
         } else {
-            console.log("error submit!", valid, fields);
+            // console.log("error submit!", valid, fields);
         }
     });
 }
@@ -160,22 +179,47 @@ const signup = async () => {
             },
             initialState
         );
-        if (data && data.value) {
-            const finalObj = {
-                id: data.value.data.id,
-                name: data.value.data.name,
-                role: initialState.role,
-                phone: initialState.phone_number,
-                email: initialState.email,
-                // subUserId: subAccount.data.id,
-            };
-            userStore.setUserData(finalObj);
-            userStore.setSubUserId(subAccount.data.id);
-            console.log(data);
+        // if (data && data.value) {
+        //     const finalObj = {
+        //         id: data.value.data.id,
+        //         name: data.value.data.name,
+        //         role: initialState.role,
+        //         phone: initialState.phone_number,
+        //         email: initialState.email,
+        //         // subUserId: subAccount.data.id,
+        //     };
+
+        //     userStore.setUserData(finalObj);
+        //     userStore.setSubUserId(data.value.data.subUserId);
+        //     console.log(data);
+        // }
+        if (!user) {
+            throw new Error("Failed to register user");
         }
+        const currentAffiliate = await useFetchAffiliate(`${user.id}`);
+        const userInfo: InitialState = {
+            id: user.id,
+            name: user.user_metadata.name,
+            role: user.user_metadata.role,
+            phone: user.user_metadata.phone,
+            email: initialState.email,
+        };
+
+        if (currentAffiliate && currentAffiliate.data) {
+            userStore.setSubUserId(currentAffiliate?.data?.subUserId);
+        }
+        userStore.setUserData(userInfo);
+        registerSuccess();
     } catch (err: any) {
-        errorNotification(err.message || "Something went wrong");
-        console.log(err);
+        if (
+            err.statusCode &&
+            (err.statusCode === 400 || err.statusCode === 401)
+        ) {
+            errorNotification(err.error || "The user already exists");
+            return;
+        }
+        errorNotification("Something went wrong");
+        // console.log(err);
     } finally {
         isLoading.value = false;
     }
@@ -195,7 +239,6 @@ async function sbRegister() {
         },
     });
     if (error) {
-        console.log("Supabase auth", authResponse);
         throw error;
     }
     // if (authResponse && authResponse.user) {

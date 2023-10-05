@@ -1,18 +1,26 @@
 <template>
     <div
         class="flex items-center justify-center min-h-vh"
-        v-loading="isLoading"
+        v-loading.fullscreen.lock="isLoading"
     >
         <div class="">
             <div class="flex justify-between w-full mb-5">
-                <h2 class="text-2xl">All Products</h2>
+                <div class="flex flex-col">
+                    <h2 class="text-2xl mb-3">All Tickets</h2>
+                    <span class="text-base text-slate-500"
+                        >Receive <strong>5 chimoney</strong> for each hour of
+                        work</span
+                    >
+                </div>
 
-                <button
-                    class="outline-none bg-purple-800 text-white hover:bg-purple-500 px-5 py-2 rounded-lg"
-                    @click="dialogVisible = true"
-                >
-                    + Add ticket
-                </button>
+                <div>
+                    <button
+                        class="outline-none bg-purple-800 text-white hover:bg-purple-500 px-5 py-2 rounded-lg"
+                        @click="dialogVisible = true"
+                    >
+                        + Add ticket
+                    </button>
+                </div>
             </div>
             <client-only>
                 <el-dialog
@@ -52,27 +60,48 @@
                 </el-dialog>
             </client-only>
 
-            <el-table :data="tableData" style="width: 100%" stripe>
+            <el-table :data="tableData" style="width: 100%" border>
                 <!-- <el-table-column type="selection" width="55" /> -->
-                <el-table-column prop="id" label="Ticket Id" width="300" />
+                <el-table-column prop="id" label="Ticket Id" width="350" />
                 <el-table-column
                     prop="hours"
                     label="Hours worked"
-                    width="300"
+                    width="200"
+                    style="text-align: center; padding-left: 0.5rem"
                 />
                 <el-table-column
                     prop="status"
                     label="Ticket status"
-                    width="300"
-                />
+                    width="200"
+                    style="text-align: center"
+                >
+                    <template #default="scope">
+                        <el-tag
+                            :type="
+                                scope.row.status === 'paid'
+                                    ? 'success'
+                                    : 'warning'
+                            "
+                        >
+                            {{ scope.row.status }}
+                        </el-tag>
+                    </template>
+                </el-table-column>
             </el-table>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import BaseModal from "~/components/modal.vue";
 import { ref, onMounted } from "vue";
-import { ElTable, ElButton, ElNotification, ElMessageBox } from "element-plus";
+import {
+    ElTable,
+    ElButton,
+    ElNotification,
+    ElMessageBox,
+    ElTag,
+} from "element-plus";
 import { Product, Ticket } from "@prisma/client";
 import { useFetchAllTickets } from "~/composables/fetchAllTickets";
 import { useUserStore } from "~/stores/userStore";
@@ -87,15 +116,19 @@ const tableData = ref<Ticket[]>([]);
 const dialogVisible = ref(false);
 const hours = ref(1);
 // const selectedRows = ref<Ticket[]>([]);
+
 await initializeData();
 
 async function initializeData() {
     isLoading.value = true;
     const data = await useFetchAllTickets();
+
     if (data) {
-        tableData.value = data.data;
+        const mytickets = data.data.filter(
+            (ticket) => ticket.affiliateId === getUserId.value
+        );
+        tableData.value = mytickets;
     }
-    // console.log(data);
     isLoading.value = false;
 }
 
@@ -117,8 +150,7 @@ async function handleCreateTicket() {
         await initializeData();
         return data.value;
     } catch (err: any) {
-        console.log(err);
-        errorNotification(err.message || "Error in creating ticket");
+        errorNotification("Error in creating ticket");
     } finally {
         isCreateTicketLoading.value = false;
         dialogVisible.value = false;
@@ -168,7 +200,7 @@ definePageMeta({
 </script>
 
 <style scoped>
-.table-padding {
-    padding: 1rem 0;
+:deep(.el-table__row) {
+    @apply text-center mb-3 border;
 }
 </style>

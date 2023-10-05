@@ -1,5 +1,7 @@
 <template>
-    <div>All my transactions on profile side</div>
+    <div>
+        <div>All my transactions on profile side</div>
+    </div>
 </template>
 
 <script setup lang="ts">

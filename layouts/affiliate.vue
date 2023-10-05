@@ -1,18 +1,16 @@
-<script lang="ts" setup></script>
-
 <template>
-    <div>
+    <div class="min-h-screen" v-loading.fullscreen.lock="isLoading">
         <header class="shadow-sm bg-white">
             <nav class="container mx-auto p-4 flex justify-between">
                 <NuxtLink to="/app" class="font-bold">TopDelivr</NuxtLink>
                 <ul class="flex gap-4">
                     <li><NuxtLink to="/app">Home</NuxtLink></li>
                     <li><NuxtLink to="/app/profile">My Profile</NuxtLink></li>
-                    <!-- <li>
-                        <NuxtLink to="/app/profile/transactions" class="btn"
+                    <li>
+                        <NuxtLink to="/app/profile/transactions"
                             >My Transactions</NuxtLink
                         >
-                    </li> -->
+                    </li>
                     <!-- <li>
                         <NuxtLink to="/app/profile/products" class="btn"
                             >My Products</NuxtLink
@@ -36,16 +34,25 @@
 </template>
 
 <script setup lang="ts">
-import { ElNotification } from "element-plus";
+import { ElNotification, ElMessage } from "element-plus";
 import { useUserStore } from "~/stores/userStore";
 const client = useSupabaseClient();
 const userStore = useUserStore();
+const isLoading = ref(false);
 async function logout() {
-    const { error } = await client.auth.signOut();
-    if (error) {
-        errorNotification(error.message || "Something went wrong");
+    isLoading.value = true;
+    try {
+        const { error } = await client.auth.signOut();
+        if (error) {
+            throw error;
+        }
+        userStore.logout();
+        logoutSuccess();
+    } catch (err: any) {
+        errorNotification(err.message || "Something went wrong");
+    } finally {
+        isLoading.value = false;
     }
-    userStore.logout();
 }
 
 function errorNotification(message: string | null) {
@@ -53,6 +60,13 @@ function errorNotification(message: string | null) {
         title: "Error",
         message: message || "Something went wrong",
         type: "error",
+    });
+}
+
+function logoutSuccess() {
+    ElMessage({
+        message: "Logged out successfully",
+        type: "success",
     });
 }
 </script>

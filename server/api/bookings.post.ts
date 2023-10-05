@@ -5,8 +5,6 @@ import { prisma } from "@/server/db/client";
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const { affiliateObj } = body;
-    console.log(affiliateObj);
-
     try {
         const bookings = await prisma.productBooking.createMany({
             data: affiliateObj,

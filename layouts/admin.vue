@@ -1,7 +1,5 @@
-<script lang="ts" setup></script>
-
 <template>
-    <div>
+    <div class="min-h-screen" v-loading.fullscreen.lock="isLoading">
         <header class="shadow-sm bg-white">
             <nav class="container mx-auto p-4 flex justify-between">
                 <NuxtLink to="/app" class="font-bold">TopDelivr</NuxtLink>
@@ -9,7 +7,7 @@
                     <li><NuxtLink to="/admin">Home</NuxtLink></li>
                     <li>
                         <NuxtLink to="/admin/admin-profile"
-                            >My Payments</NuxtLink
+                            >My Admin Account</NuxtLink
                         >
                     </li>
                     <li>
@@ -45,16 +43,24 @@
 </template>
 
 <script setup lang="ts">
-import { ElNotification } from "element-plus";
-import { useUserStore } from "~/stores/userstore";
-import storeToRefs from "pinia";
-
+import { ElNotification, ElMessage } from "element-plus";
+import { useUserStore } from "~/stores/userStore";
 const client = useSupabaseClient();
+const userStore = useUserStore();
+const isLoading = ref(false);
 async function logout() {
-    const { error } = await client.auth.signOut();
-    if (error) {
-        errorNotification(error.message || "Something went wrong");
-        throw error;
+    isLoading.value = true;
+    try {
+        const { error } = await client.auth.signOut();
+        if (error) {
+            throw error;
+        }
+        userStore.logout();
+        logoutSuccess();
+    } catch (err: any) {
+        errorNotification(err.message || "Something went wrong");
+    } finally {
+        isLoading.value = false;
     }
 }
 
@@ -63,6 +69,13 @@ function errorNotification(message: string | null) {
         title: "Error",
         message: message || "Something went wrong",
         type: "error",
+    });
+}
+
+function logoutSuccess() {
+    ElMessage({
+        message: "Logged out successfully",
+        type: "success",
     });
 }
 </script>

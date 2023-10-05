@@ -1,7 +1,7 @@
 <template>
     <div
         class="flex justify-center items-center min-h-screen"
-        v-loading="isLoading"
+        v-loading.fullscreen.lock="isLoading"
     >
         <!-- start of card -->
         <div
@@ -69,7 +69,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { FormRules, FormInstance, ElNotification } from "element-plus";
+import {
+    FormRules,
+    FormInstance,
+    ElNotification,
+    ElMessage,
+} from "element-plus";
 import { LoginRule } from "@/types/FormRules";
 import { useUserStore } from "@/stores/userStore";
 import { InitialState } from "@/types/InitialState";
@@ -123,6 +128,13 @@ function errorNotification(message: string | null) {
     });
 }
 
+function loginSuccess() {
+    ElMessage({
+        message: "Logged in successfully",
+        type: "success",
+    });
+}
+
 async function onSubmit(formEl: FormInstance | undefined) {
     if (!formEl) return;
     await formEl.validate((valid, fields) => {
@@ -130,7 +142,8 @@ async function onSubmit(formEl: FormInstance | undefined) {
             // signin function
             login();
         } else {
-            console.log("error submit!", valid, fields);
+            return;
+            // console.log("error submit!", valid, fields);
         }
     });
 }
@@ -143,9 +156,7 @@ const login = async () => {
             password: initialState.password,
         });
 
-        // console.log(data);
         if (error) {
-            console.log(error);
             throw error;
         }
         const currentAffiliate = await useFetchAffiliate(`${data.user.id}`);
@@ -161,10 +172,19 @@ const login = async () => {
             userStore.setSubUserId(currentAffiliate?.data?.subUserId);
         }
         userStore.setUserData(userInfo);
+        loginSuccess();
         return data.user;
     } catch (error: any) {
-        console.log(error);
-        errorNotification(error.message);
+        if (error.status && error.status === 404) {
+            errorNotification("There is no user with that email");
+            return;
+        }
+        if (error.status && error.status === 401) {
+            errorNotification("Password is incorrect.");
+            return;
+        }
+
+        errorNotification("Something went wrong. Please try again later");
     } finally {
         isLoading.value = false;
     }

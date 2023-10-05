@@ -1,5 +1,5 @@
 <template>
-    <div v-loading="isLoading" class="flex flex-col min-h-full">
+    <div v-loading.fullscreen.lock="isLoading" class="flex flex-col min-h-full">
         <!-- Details section -->
         <div class="flex flex-col">
             <h2 class="text-xl text-slate-900 font-semibold">
@@ -93,12 +93,12 @@ async function fetchSubUserAccount() {
     isLoading.value = true;
     try {
         const user = await fetchAffiliate();
-        console.log(user);
+        // console.log(user);
         if (user && user.data?.subUserId) {
             const subUserDetails = await useGetSubAccountDetails(
                 user.data.subUserId
             );
-            console.log(subUserDetails);
+            // console.log(subUserDetails);
             subAccount.value = subUserDetails.data;
         }
     } catch (error) {
