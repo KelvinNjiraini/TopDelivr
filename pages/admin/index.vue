@@ -145,6 +145,7 @@ async function handlePendingTickets() {
             const updatedTickets = await useUpdateTickets(ticketsToPay);
             return updatedTickets;
         }
+        initializeData();
     } catch (e: any) {
         if (e.status && e.status === 400) {
             errorNotification(
