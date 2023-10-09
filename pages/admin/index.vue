@@ -13,7 +13,9 @@
                     >
                 </div>
 
-                <div>
+                <div
+                    :class="tableData.length === 0 ? 'cursor-not-allowed' : ''"
+                >
                     <button
                         class="outline-none bg-purple-800 text-white hover:bg-purple-500 px-5 py-2 rounded-lg"
                         @click="dialogVisible = true"
