@@ -175,8 +175,8 @@ const login = async () => {
         loginSuccess();
         return data.user;
     } catch (error: any) {
-        if (error.status && error.status === 404) {
-            errorNotification("There is no user with that email");
+        if (error.status === 400 && error.name === "AuthApiError") {
+            errorNotification("Invalid login credentials");
             return;
         }
         if (error.status && error.status === 401) {

@@ -170,7 +170,7 @@ const signup = async () => {
         const { user } = await sbRegister();
         // register to chimoney
 
-        const data = await useAffiliateRegister(
+        await useAffiliateRegister(
             {
                 id: user?.id,
                 name: initialState.name,
@@ -194,7 +194,10 @@ const signup = async () => {
         //     console.log(data);
         // }
         if (!user) {
-            throw new Error("Failed to register user");
+            throw createError({
+                statusMessage: "Failed to register user",
+                statusCode: 400,
+            });
         }
         const currentAffiliate = await useFetchAffiliate(`${user.id}`);
         const userInfo: InitialState = {
