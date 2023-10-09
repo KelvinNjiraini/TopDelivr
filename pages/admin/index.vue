@@ -55,13 +55,13 @@
                 </el-dialog>
             </client-only>
 
-            <el-table :data="tableData" style="width: 100%" stripe>
+            <el-table :data="tableData" style="width: 100%" border>
                 <!-- <el-table-column type="selection" width="55" /> -->
-                <el-table-column prop="id" label="Ticket Id" width="300" />
+                <el-table-column prop="id" label="Ticket Id" width="350" />
                 <el-table-column
                     prop="hours"
                     label="Hours worked"
-                    width="300"
+                    width="200"
                 />
                 <el-table-column
                     prop="status"
@@ -88,7 +88,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { ElTable, ElButton, ElNotification } from "element-plus";
+import { ElTable, ElButton, ElNotification, ElTag } from "element-plus";
 import { Product, Ticket } from "@prisma/client";
 import { useFetchAllTickets } from "~/composables/fetchAllTickets";
 import { useUserStore } from "~/stores/userStore";
@@ -189,10 +189,10 @@ definePageMeta({
 </script>
 
 <style scoped>
-.el-table {
-    /* background: red; */
+/* .el-table {
+ 
     @apply border;
-}
+} */
 
 :deep(.el-table__row) {
     @apply text-center mb-3 border;

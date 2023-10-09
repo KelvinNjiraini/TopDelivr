@@ -10,11 +10,11 @@
                             >My Admin Account</NuxtLink
                         >
                     </li>
-                    <li>
+                    <!-- <li>
                         <NuxtLink to="/admin/transactions"
                             >My Transactions</NuxtLink
                         >
-                    </li>
+                    </li> -->
                     <!-- <li>
                         <NuxtLink to="/app/profile/transactions" class="btn"
                             >My Transactions</NuxtLink
