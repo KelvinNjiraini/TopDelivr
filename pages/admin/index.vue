@@ -13,13 +13,14 @@
                     >
                 </div>
 
-                <div
-                    :class="tableData.length === 0 ? 'cursor-not-allowed' : ''"
-                >
+                <div>
                     <button
                         class="outline-none bg-purple-800 text-white hover:bg-purple-500 px-5 py-2 rounded-lg"
                         @click="dialogVisible = true"
                         :disabled="tableData.length === 0"
+                        :class="
+                            tableData.length === 0 ? 'cursor-not-allowed' : ''
+                        "
                     >
                         Make collective payment
                     </button>

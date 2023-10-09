@@ -2,7 +2,7 @@
     <div class="min-h-screen" v-loading.fullscreen.lock="isLoading">
         <header class="shadow-sm bg-white">
             <nav class="container mx-auto p-4 flex justify-between">
-                <NuxtLink to="/app" class="font-bold">TopDelivr</NuxtLink>
+                <NuxtLink to="/admin" class="font-bold">TopDelivr</NuxtLink>
                 <ul class="flex gap-4">
                     <li><NuxtLink to="/admin">Home</NuxtLink></li>
                     <li>
