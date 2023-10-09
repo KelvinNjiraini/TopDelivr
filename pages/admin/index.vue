@@ -17,6 +17,7 @@
                     <button
                         class="outline-none bg-purple-800 text-white hover:bg-purple-500 px-5 py-2 rounded-lg"
                         @click="dialogVisible = true"
+                        :disabled="tableData.length === 0"
                     >
                         Make collective payment
                     </button>
@@ -128,6 +129,7 @@ async function handlePendingTickets() {
         const pendingTickets = data?.data.filter(
             (ticket) => ticket.status === "pending"
         );
+
         // 2) get all the chimoney to pay per hour plus the subaccount ids
         const ticketsToPay = pendingTickets?.map((ticket) => {
             return {
