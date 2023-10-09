@@ -6,11 +6,11 @@
                 <ul class="flex gap-4">
                     <li><NuxtLink to="/app">Home</NuxtLink></li>
                     <li><NuxtLink to="/app/profile">My Profile</NuxtLink></li>
-                    <li>
+                    <!-- <li>
                         <NuxtLink to="/app/profile/transactions"
                             >My Transactions</NuxtLink
                         >
-                    </li>
+                    </li> -->
                     <!-- <li>
                         <NuxtLink to="/app/profile/products" class="btn"
                             >My Products</NuxtLink
