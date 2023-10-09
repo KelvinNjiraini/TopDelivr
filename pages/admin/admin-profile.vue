@@ -121,6 +121,10 @@ definePageMeta({
     middleware: "auth",
 });
 
+useHead({
+    title: "Admin | Profile",
+});
+
 onMounted(async () => {
     await fetchSubUserAccount();
 });

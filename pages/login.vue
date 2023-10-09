@@ -215,4 +215,8 @@ watchEffect(async () => {
 // definePageMeta({
 //     layout: 'plain',
 // });
+
+useHead({
+    title: "Welcome back to TopDelivr",
+});
 </script>

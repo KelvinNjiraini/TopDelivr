@@ -271,4 +271,8 @@ watchEffect(async () => {
         return await navigateTo("/admin");
     }
 });
+
+useHead({
+    title: "Register to TopDelivr",
+});
 </script>

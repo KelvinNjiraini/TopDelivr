@@ -99,6 +99,7 @@ import { useUserStore } from "~/stores/userStore";
 import { storeToRefs } from "pinia";
 import { useChimoneyPayout } from "~/composables/chimoneyPayout";
 import { useUpdateTickets } from "~/composables/updateTickets";
+import { Head } from "#build/components";
 
 const userStore = useUserStore();
 const { subUserId } = storeToRefs(userStore);
@@ -190,6 +191,10 @@ onMounted(async () => {
 definePageMeta({
     layout: "admin",
     middleware: "auth",
+});
+
+useHead({
+    title: "Admin | Home",
 });
 </script>
 

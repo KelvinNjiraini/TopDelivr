@@ -189,13 +189,17 @@ watchEffect(async () => {
     }
 });
 
-onMounted(async () => {
-    await initializeData();
-});
-
 definePageMeta({
     layout: "affiliate",
     middleware: "auth",
+});
+
+useHead({
+    title: "Affiliate | Home",
+});
+
+onMounted(async () => {
+    await initializeData();
 });
 </script>
 

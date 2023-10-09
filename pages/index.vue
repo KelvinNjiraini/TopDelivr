@@ -57,5 +57,9 @@ watchEffect(async () => {
         return await navigateTo("/admin");
     }
 });
+
+useHead({
+    title: "TopDelivr | Delivr work and get paid per hour!",
+});
 </script>
 <style scoped></style>

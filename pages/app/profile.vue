@@ -124,6 +124,9 @@ definePageMeta({
 onMounted(async () => {
     await fetchSubUserAccount();
 });
+useHead({
+    title: "Affiliate | Profile",
+});
 </script>
 
 <style lang="scss" scoped>
