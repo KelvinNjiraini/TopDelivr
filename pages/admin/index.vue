@@ -92,14 +92,19 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { ElTable, ElButton, ElNotification, ElTag } from "element-plus";
+import {
+    ElTable,
+    ElButton,
+    ElNotification,
+    ElTag,
+    ElMessage,
+} from "element-plus";
 import { Product, Ticket } from "@prisma/client";
 import { useFetchAllTickets } from "~/composables/fetchAllTickets";
 import { useUserStore } from "~/stores/userStore";
 import { storeToRefs } from "pinia";
 import { useChimoneyPayout } from "~/composables/chimoneyPayout";
 import { useUpdateTickets } from "~/composables/updateTickets";
-import { Head } from "#build/components";
 
 const userStore = useUserStore();
 const { subUserId } = storeToRefs(userStore);
@@ -149,9 +154,10 @@ async function handlePendingTickets() {
         // 4) update all the tickets above as paid
         if (ticketsToPay) {
             const updatedTickets = await useUpdateTickets(ticketsToPay);
+            initializeData();
+            paymentSuccess();
             return updatedTickets;
         }
-        initializeData();
     } catch (e: any) {
         if (e.status && e.status === 400) {
             errorNotification(
@@ -166,6 +172,13 @@ async function handlePendingTickets() {
         isPendingTicketLoading.value = false;
         dialogVisible.value = false;
     }
+}
+
+function paymentSuccess() {
+    ElMessage({
+        message: "Payment completed successfully",
+        type: "success",
+    });
 }
 
 function errorNotification(message: string | null) {
